@@ -42,24 +42,23 @@ def lossFun(inputs, targets, hprev):
     hs[t] = np.tanh(np.dot(Wxh, xs[t]) + np.dot(Whh, hs[t-1]) + bh)
     ys[t] = np.dot(Why, hs[t]) + by
     ps[t] = np.exp(ys[t]) / np.sum(np.exp(ys[t]))
-    loss += -np.log(ps[t][targets[t],0])
+    loss += -np.log(ps[t][targets[t],0]) # softmax ("cross-entropy loss")
   # backward pass: compute gradients going backwards
   dWxh, dWhh, dWhy = np.zeros_like(Wxh), np.zeros_like(Whh), np.zeros_like(Why)
   dbh, dby = np.zeros_like(bh), np.zeros_like(by)
-  dhs, dys = {}, {}
   dhnext = np.zeros_like(hs[0])
   for t in reversed(xrange(len(inputs))):
-    dys[t] = np.copy(ps[t])
-    dys[t][targets[t]] -= 1 # backprop into y
-    dWhy += np.dot(dys[t], hs[t].T)
-    dby += np.copy(dys[t])
-    dhs[t] = np.dot(Why.T, dys[t]) + dhnext # backprop into h
-    dhraw = (1 - hs[t] * hs[t]) * dhs[t] # backprop through tanh nonlinearity
+    dy = np.copy(ps[t])
+    dy[targets[t]] -= 1 # backprop into y
+    dWhy += np.dot(dy, hs[t].T)
+    dby += np.copy(dy)
+    dh = np.dot(Why.T, dy) + dhnext # backprop into h
+    dhraw = (1 - hs[t] * hs[t]) * dh # backprop through tanh nonlinearity
     dbh += dhraw
     dWxh += np.dot(dhraw, xs[t].T)
     dWhh += np.dot(dhraw, hs[t-1].T)
     dhnext = np.dot(Whh.T, dhraw)
-
+  
   return loss, dWxh, dWhh, dWhy, dbh, dby, hs[len(inputs)-1]
 
 def sample(h, seed_ix, n):
@@ -67,7 +66,7 @@ def sample(h, seed_ix, n):
   sample a sequence of integers from the model 
   h is memory state, seed_ix is seed letter for first time step
   """
-  x = np.zeros((vocab_size,1))
+  x = np.zeros((vocab_size, 1))
   x[seed_ix] = 1
   ixes = []
   for t in xrange(n):
@@ -75,7 +74,7 @@ def sample(h, seed_ix, n):
     y = np.dot(Why, h) + by
     p = np.exp(y) / np.sum(np.exp(y))
     ix = np.random.choice(range(vocab_size), p=p.ravel())
-    x = np.zeros((vocab_size,1))
+    x = np.zeros((vocab_size, 1))
     x[ix] = 1
     ixes.append(ix)
   return ixes
@@ -101,7 +100,7 @@ while n < 20000:
   
   # perform parameter update with vanilla SGD, decay learning rate
   learning_rate = base_learning_rate * np.power(learning_rate_decay, n/1000.0)
-  for param,dparam in zip([Wxh, Whh, Why, bh, by], [dWxh, dWhh, dWhy, dbh, dby]):
+  for param, dparam in zip([Wxh, Whh, Why, bh, by], [dWxh, dWhh, dWhy, dbh, dby]):
     param += -learning_rate * dparam
 
   p += seq_length # move data pointer
