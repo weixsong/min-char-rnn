@@ -51,14 +51,14 @@ def lossFun(inputs, targets, hprev):
     dy = np.copy(ps[t])
     dy[targets[t]] -= 1 # backprop into y
     dWhy += np.dot(dy, hs[t].T)
-    dby += np.copy(dy)
+    dby += dy
     dh = np.dot(Why.T, dy) + dhnext # backprop into h
     dhraw = (1 - hs[t] * hs[t]) * dh # backprop through tanh nonlinearity
     dbh += dhraw
     dWxh += np.dot(dhraw, xs[t].T)
     dWhh += np.dot(dhraw, hs[t-1].T)
     dhnext = np.dot(Whh.T, dhraw)
-  
+
   return loss, dWxh, dWhh, dWhy, dbh, dby, hs[len(inputs)-1]
 
 def sample(h, seed_ix, n):
@@ -92,11 +92,11 @@ while n < 20000:
   if n % 100 == 0:
     sample_ix = sample(hprev, inputs[0], 40)
     print 'sample:'
-    print ''.join([ix_to_char[ix] for ix in sample_ix])
+    print ''.join(ix_to_char[ix] for ix in sample_ix)
 
   # forward seq_length characters through the net and fetch gradient
   loss, dWxh, dWhh, dWhy, dbh, dby, hprev = lossFun(inputs, targets, hprev)
-  if p == 0:  print 'iter %d, loss: %f' % (n, loss) # print progress each epoch
+  if p == 0: print 'iter %d, loss: %f' % (n, loss) # print progress each epoch
   
   # perform parameter update with vanilla SGD, decay learning rate
   learning_rate = base_learning_rate * np.power(learning_rate_decay, n/1000.0)
