@@ -1,11 +1,11 @@
 """
-Minimal character-level demo. Written by Andrej Karpathy (@karpathy)
+Minimal character-level Vanilla RNN model. Written by Andrej Karpathy (@karpathy)
 BSD License
 """
 import numpy as np
 
 # data I/O
-data = open('data.txt', 'r').read() # should be simple plain text file
+data = open('input.txt', 'r').read() # should be simple plain text file
 chars = list(set(data))
 print '%d unique characters in data.' % (len(chars), )
 vocab_size = len(chars)
@@ -14,10 +14,9 @@ char_to_ix = { ch:i for i,ch in enumerate(chars) }
 ix_to_char = { i:ch for i,ch in enumerate(chars) }
 
 # hyperparameters
-hidden_size = 50 # size of hidden layer of neurons
-seq_length = 20 # number of steps to unroll the RNN for
-base_learning_rate = 0.01
-learning_rate_decay = 0.85 # every 1000 iteration learning rate gets divided by this
+hidden_size = 100 # size of hidden layer of neurons
+seq_length = 25 # number of steps to unroll the RNN for
+learning_rate = 1e-1
 
 # model parameters
 Wxh = np.random.randn(hidden_size, vocab_size)*0.01 # input to hidden
@@ -29,7 +28,7 @@ by = np.zeros((vocab_size, 1)) # output bias
 def lossFun(inputs, targets, hprev):
   """
   inputs,targets are both list of integers.
-  hprev is Hx1 array of initial
+  hprev is Hx1 array of initial hidden state
   returns the loss, gradients on model parameters, and last hidden state
   """
   xs, hs, ys, ps = {}, {}, {}, {}
@@ -58,7 +57,8 @@ def lossFun(inputs, targets, hprev):
     dWxh += np.dot(dhraw, xs[t].T)
     dWhh += np.dot(dhraw, hs[t-1].T)
     dhnext = np.dot(Whh.T, dhraw)
-
+  for dparam in [dWxh, dWhh, dWhy, dbh, dby]:
+    dparam = np.clip(dparam, -1, 1) # clip to mitigate exploding gradients
   return loss, dWxh, dWhh, dWhy, dbh, dby, hs[len(inputs)-1]
 
 def sample(h, seed_ix, n):
@@ -80,7 +80,10 @@ def sample(h, seed_ix, n):
   return ixes
 
 n, p = 0, 0
-while n < 20000:
+mWxh, mWhh, mWhy = np.zeros_like(Wxh), np.zeros_like(Whh), np.zeros_like(Why)
+mbh, mby = np.zeros_like(bh), np.zeros_like(by) # memory variables for Adagrad
+smooth_loss = -np.log(1.0/vocab_size)*seq_length # loss at iteration 0
+while True:
   # prepare inputs (we're sweeping from left to right in steps seq_length long)
   if p+seq_length+1 >= len(data) or n == 0: 
     hprev = np.zeros((hidden_size,1)) # reset RNN memory
@@ -90,18 +93,19 @@ while n < 20000:
 
   # sample from the model now and then
   if n % 100 == 0:
-    sample_ix = sample(hprev, inputs[0], 40)
-    print 'sample:'
-    print ''.join(ix_to_char[ix] for ix in sample_ix)
+    sample_ix = sample(hprev, inputs[0], 200)
+    txt = ''.join(ix_to_char[ix] for ix in sample_ix)
+    print '----\n %s \n----' % (txt, )
 
   # forward seq_length characters through the net and fetch gradient
   loss, dWxh, dWhh, dWhy, dbh, dby, hprev = lossFun(inputs, targets, hprev)
-  if p == 0: print 'iter %d, loss: %f' % (n, loss) # print progress each epoch
+  smooth_loss = smooth_loss * 0.999 + loss * 0.001
+  if n % 100 == 0: print 'iter %d, loss: %f' % (n, smooth_loss) # print progress
   
-  # perform parameter update with vanilla SGD, decay learning rate
-  learning_rate = base_learning_rate * np.power(learning_rate_decay, n/1000.0)
-  for param, dparam in zip([Wxh, Whh, Why, bh, by], [dWxh, dWhh, dWhy, dbh, dby]):
-    param += -learning_rate * dparam
+  # perform parameter update with Adagrad
+  for param, dparam, mem in zip([Wxh, Whh, Why, bh, by], [dWxh, dWhh, dWhy, dbh, dby], [mWxh, mWhh, mWhy, mbh, mby]):
+    mem += dparam*dparam
+    param += -learning_rate * dparam / np.sqrt(mem + 1e-8) # adagrad update
 
   p += seq_length # move data pointer
   n += 1 # iteration counter
