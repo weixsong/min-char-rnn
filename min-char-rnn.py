@@ -38,10 +38,10 @@ def lossFun(inputs, targets, hprev):
   for t in xrange(len(inputs)):
     xs[t] = np.zeros((vocab_size,1)) # encode in 1-of-k representation
     xs[t][inputs[t]] = 1
-    hs[t] = np.tanh(np.dot(Wxh, xs[t]) + np.dot(Whh, hs[t-1]) + bh)
-    ys[t] = np.dot(Why, hs[t]) + by
-    ps[t] = np.exp(ys[t]) / np.sum(np.exp(ys[t]))
-    loss += -np.log(ps[t][targets[t],0]) # softmax ("cross-entropy loss")
+    hs[t] = np.tanh(np.dot(Wxh, xs[t]) + np.dot(Whh, hs[t-1]) + bh) # hidden state
+    ys[t] = np.dot(Why, hs[t]) + by # unnormalized log probabilities for next chars
+    ps[t] = np.exp(ys[t]) / np.sum(np.exp(ys[t])) # probabilities for next chars
+    loss += -np.log(ps[t][targets[t],0]) # softmax (cross-entropy loss)
   # backward pass: compute gradients going backwards
   dWxh, dWhh, dWhy = np.zeros_like(Wxh), np.zeros_like(Whh), np.zeros_like(Why)
   dbh, dby = np.zeros_like(bh), np.zeros_like(by)
@@ -58,7 +58,7 @@ def lossFun(inputs, targets, hprev):
     dWhh += np.dot(dhraw, hs[t-1].T)
     dhnext = np.dot(Whh.T, dhraw)
   for dparam in [dWxh, dWhh, dWhy, dbh, dby]:
-    dparam = np.clip(dparam, -1, 1) # clip to mitigate exploding gradients
+    np.clip(dparam, -1, 1, out=dparam) # clip to mitigate exploding gradients
   return loss, dWxh, dWhh, dWhy, dbh, dby, hs[len(inputs)-1]
 
 def sample(h, seed_ix, n):
@@ -103,9 +103,11 @@ while True:
   if n % 100 == 0: print 'iter %d, loss: %f' % (n, smooth_loss) # print progress
   
   # perform parameter update with Adagrad
-  for param, dparam, mem in zip([Wxh, Whh, Why, bh, by], [dWxh, dWhh, dWhy, dbh, dby], [mWxh, mWhh, mWhy, mbh, mby]):
-    mem += dparam*dparam
+  for param, dparam, mem in zip([Wxh, Whh, Why, bh, by], 
+                                [dWxh, dWhh, dWhy, dbh, dby], 
+                                [mWxh, mWhh, mWhy, mbh, mby]):
+    mem += dparam * dparam
     param += -learning_rate * dparam / np.sqrt(mem + 1e-8) # adagrad update
 
   p += seq_length # move data pointer
-  n += 1 # iteration counter
+  n += 1 # iteration counter 
