@@ -7,9 +7,8 @@ import numpy as np
 # data I/O
 data = open('input.txt', 'r').read() # should be simple plain text file
 chars = list(set(data))
-print '%d unique characters in data.' % (len(chars), )
-vocab_size = len(chars)
-data_size = len(data)
+data_size, vocab_size = len(data), len(chars)
+print 'data has %d characters, %d unique.' % (data_size, vocab_size)
 char_to_ix = { ch:i for i,ch in enumerate(chars) }
 ix_to_char = { i:ch for i,ch in enumerate(chars) }
 
@@ -58,7 +57,7 @@ def lossFun(inputs, targets, hprev):
     dWhh += np.dot(dhraw, hs[t-1].T)
     dhnext = np.dot(Whh.T, dhraw)
   for dparam in [dWxh, dWhh, dWhy, dbh, dby]:
-    np.clip(dparam, -1, 1, out=dparam) # clip to mitigate exploding gradients
+    np.clip(dparam, -5, 5, out=dparam) # clip to mitigate exploding gradients
   return loss, dWxh, dWhh, dWhy, dbh, dby, hs[len(inputs)-1]
 
 def sample(h, seed_ix, n):
