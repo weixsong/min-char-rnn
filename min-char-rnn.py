@@ -2,13 +2,20 @@
 Minimal character-level Vanilla RNN model. Written by Andrej Karpathy (@karpathy)
 BSD License
 """
+
+## add comments by weixsong
+
 import numpy as np
 
 # data I/O
 data = open('input.txt', 'r').read() # should be simple plain text file
+
+# use set() to count the vacab size
 chars = list(set(data))
 data_size, vocab_size = len(data), len(chars)
 print 'data has %d characters, %d unique.' % (data_size, vocab_size)
+
+# dictionary to convert char to idx, idx to char
 char_to_ix = { ch:i for i,ch in enumerate(chars) }
 ix_to_char = { i:ch for i,ch in enumerate(chars) }
 
