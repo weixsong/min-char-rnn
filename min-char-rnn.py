@@ -5,6 +5,11 @@ BSD License
 
 ## add comments by weixsong
 
+## this is a 3 layers neuron network.
+## input layer: one hot vector, dim: vocab * 1
+## hidden layer: LSTM, hidden vector: hidden_size * 1
+## output layer: Softmax, vocab * 1, the probabilities distribution of each character
+
 import numpy as np
 
 # data I/O
