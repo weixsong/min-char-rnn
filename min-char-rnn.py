@@ -25,6 +25,7 @@ seq_length = 25 # number of steps to unroll the RNN for
 learning_rate = 1e-1
 
 # model parameters
+## RNN/LSTM
 Wxh = np.random.randn(hidden_size, vocab_size)*0.01 # input to hidden
 Whh = np.random.randn(hidden_size, hidden_size)*0.01 # hidden to hidden
 Why = np.random.randn(vocab_size, hidden_size)*0.01 # hidden to output
