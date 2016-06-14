@@ -80,7 +80,7 @@ def lossFun(inputs, targets, hprev):
 
 def sample(h, seed_ix, n):
   """ 
-  sample a sequence of integers from the model 
+  sample a sequence of integers from the model
   h is memory state, seed_ix is seed letter for first time step
   """
   x = np.zeros((vocab_size, 1))
@@ -110,6 +110,7 @@ while True:
   # prepare inputs (we're sweeping from left to right in steps seq_length long)
   if p + seq_length + 1 >= len(data) or n == 0:
     # reset RNN memory
+    ## hprev is the hiddden state of RNN
     hprev = np.zeros((hidden_size, 1))
     # go from start of data
     p = 0
