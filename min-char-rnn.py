@@ -96,22 +96,32 @@ def sample(h, seed_ix, n):
     ixes.append(ix)
   return ixes
 
-n, p = 0, 0
+## iterator counter
+n = 0
+## data pointer
+p = 0
+
 mWxh, mWhh, mWhy = np.zeros_like(Wxh), np.zeros_like(Whh), np.zeros_like(Why)
 mbh, mby = np.zeros_like(bh), np.zeros_like(by) # memory variables for Adagrad
 smooth_loss = -np.log(1.0/vocab_size)*seq_length # loss at iteration 0
+
+## main loop
 while True:
   # prepare inputs (we're sweeping from left to right in steps seq_length long)
-  if p+seq_length+1 >= len(data) or n == 0: 
-    hprev = np.zeros((hidden_size,1)) # reset RNN memory
-    p = 0 # go from start of data
-  inputs = [char_to_ix[ch] for ch in data[p:p+seq_length]]
-  targets = [char_to_ix[ch] for ch in data[p+1:p+seq_length+1]]
+  if p + seq_length + 1 >= len(data) or n == 0:
+    # reset RNN memory
+    hprev = np.zeros((hidden_size, 1))
+    # go from start of data
+    p = 0
+
+  inputs = [char_to_ix[ch] for ch in data[p : p + seq_length]]
+  targets = [char_to_ix[ch] for ch in data[p + 1 : p + seq_length + 1]]
 
   # sample from the model now and then
   if n % 100 == 0:
     sample_ix = sample(hprev, inputs[0], 200)
     txt = ''.join(ix_to_char[ix] for ix in sample_ix)
+    print '---- sample -----'
     print '----\n %s \n----' % (txt, )
 
   # forward seq_length characters through the net and fetch gradient
