@@ -78,23 +78,37 @@ def lossFun(inputs, targets, hprev):
     np.clip(dparam, -5, 5, out=dparam) # clip to mitigate exploding gradients
   return loss, dWxh, dWhh, dWhy, dbh, dby, hs[len(inputs)-1]
 
+## given a hidden RNN state, and a input char id, predict the coming n chars
 def sample(h, seed_ix, n):
   """ 
   sample a sequence of integers from the model
   h is memory state, seed_ix is seed letter for first time step
   """
+
+  ## a one-hot vector
   x = np.zeros((vocab_size, 1))
   x[seed_ix] = 1
+
   ixes = []
   for t in xrange(n):
+    ## self.h = np.tanh(np.dot(self.W_hh, self.h) + np.dot(self.W_xh, x))
     h = np.tanh(np.dot(Wxh, x) + np.dot(Whh, h) + bh)
+    ## y = np.dot(self.W_hy, self.h)
     y = np.dot(Why, h) + by
+    ## softmax
     p = np.exp(y) / np.sum(np.exp(y))
+    ## sample according to probability distribution
     ix = np.random.choice(range(vocab_size), p=p.ravel())
+
+    ## update input x
+    ## use the new sampled result as last input, then predict next char again.
     x = np.zeros((vocab_size, 1))
     x[ix] = 1
+
     ixes.append(ix)
+
   return ixes
+
 
 ## iterator counter
 n = 0
