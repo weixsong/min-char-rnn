@@ -31,6 +31,11 @@ learning_rate = 1e-1
 
 # model parameters
 ## RNN/LSTM
+## this is not LSTM, is the simple basic RNN
+## # update the hidden state
+## self.h = np.tanh(np.dot(self.W_hh, self.h) + np.dot(self.W_xh, x))
+## # compute the output vector
+## y = np.dot(self.W_hy, self.h)
 Wxh = np.random.randn(hidden_size, vocab_size)*0.01 # input to hidden
 Whh = np.random.randn(hidden_size, hidden_size)*0.01 # hidden to hidden
 Why = np.random.randn(vocab_size, hidden_size)*0.01 # hidden to output
