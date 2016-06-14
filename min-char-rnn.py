@@ -43,6 +43,9 @@ Why = np.random.randn(vocab_size, hidden_size)*0.01 # hidden to output
 bh = np.zeros((hidden_size, 1)) # hidden bias
 by = np.zeros((vocab_size, 1)) # output bias
 
+
+## compute loss, derivative
+## cross-entropy loss is used
 def lossFun(inputs, targets, hprev):
   """
   inputs,targets are both list of integers.
@@ -50,16 +53,23 @@ def lossFun(inputs, targets, hprev):
   returns the loss, gradients on model parameters, and last hidden state
   """
   xs, hs, ys, ps = {}, {}, {}, {}
+  ## record each hidden state of
   hs[-1] = np.copy(hprev)
   loss = 0
-  # forward pass
+  # forward pass for each training data point
   for t in xrange(len(inputs)):
-    xs[t] = np.zeros((vocab_size,1)) # encode in 1-of-k representation
+    xs[t] = np.zeros((vocab_size, 1)) # encode in 1-of-k representation
     xs[t][inputs[t]] = 1
-    hs[t] = np.tanh(np.dot(Wxh, xs[t]) + np.dot(Whh, hs[t-1]) + bh) # hidden state
-    ys[t] = np.dot(Why, hs[t]) + by # unnormalized log probabilities for next chars
-    ps[t] = np.exp(ys[t]) / np.sum(np.exp(ys[t])) # probabilities for next chars
-    loss += -np.log(ps[t][targets[t],0]) # softmax (cross-entropy loss)
+    
+    ## hidden state, using previous hidden state hs[t-1]
+    hs[t] = np.tanh(np.dot(Wxh, xs[t]) + np.dot(Whh, hs[t-1]) + bh)
+    ## unnormalized log probabilities for next chars
+    ys[t] = np.dot(Why, hs[t]) + by
+    ## probabilities for next chars, softmax
+    ps[t] = np.exp(ys[t]) / np.sum(np.exp(ys[t]))
+    ## softmax (cross-entropy loss)
+    loss += -np.log(ps[t][targets[t], 0])
+
   # backward pass: compute gradients going backwards
   dWxh, dWhh, dWhy = np.zeros_like(Wxh), np.zeros_like(Whh), np.zeros_like(Why)
   dbh, dby = np.zeros_like(bh), np.zeros_like(by)
@@ -75,8 +85,10 @@ def lossFun(inputs, targets, hprev):
     dWxh += np.dot(dhraw, xs[t].T)
     dWhh += np.dot(dhraw, hs[t-1].T)
     dhnext = np.dot(Whh.T, dhraw)
+
   for dparam in [dWxh, dWhh, dWhy, dbh, dby]:
     np.clip(dparam, -5, 5, out=dparam) # clip to mitigate exploding gradients
+
   return loss, dWxh, dWhh, dWhy, dbh, dby, hs[len(inputs)-1]
 
 ## given a hidden RNN state, and a input char id, predict the coming n chars
