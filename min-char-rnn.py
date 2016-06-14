@@ -83,13 +83,25 @@ def lossFun(inputs, targets, hprev):
     ## output layer doesnot use activation function, so no need to compute the derivative of error with regard to the net input
     ## of output layer. 
     ## then, we could directly compute the derivative of error with regard to the weight between hidden layer and output layer.
+    ## dE/dy[j]*dy[j]/dWhy[j,k] = dE/dy[j] * h[k]
     dWhy += np.dot(dy, hs[t].T)
     dby += dy
-    dh = np.dot(Why.T, dy) + dhnext # backprop into h
-    dhraw = (1 - hs[t] * hs[t]) * dh # backprop through tanh nonlinearity
+    
+    ## backprop into h
+    ## derivative of error with regard to the output of hidden layer
+    ## derivative of H, come from output layer y and also come from H(t+1), the next time H
+    dh = np.dot(Why.T, dy) + dhnext
+    ## backprop through tanh nonlinearity
+    ## derivative of error with regard to the input of hidden layer
+    ## dtanh(x)/dx = 1 - tanh(x) * tanh(x)
+    dhraw = (1 - hs[t] * hs[t]) * dh
     dbh += dhraw
+    
+    ## derivative of the error with regard to the weight between input layer and hidden layer
     dWxh += np.dot(dhraw, xs[t].T)
     dWhh += np.dot(dhraw, hs[t-1].T)
+    ## derivative of the error with regard to H(t+1)
+    ## or derivative of the error of H(t-1) with regard to H(t)
     dhnext = np.dot(Whh.T, dhraw)
 
   for dparam in [dWxh, dWhh, dWhy, dbh, dby]:
