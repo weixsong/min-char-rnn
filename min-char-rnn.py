@@ -75,8 +75,14 @@ def lossFun(inputs, targets, hprev):
   dbh, dby = np.zeros_like(bh), np.zeros_like(by)
   dhnext = np.zeros_like(hs[0])
   for t in reversed(xrange(len(inputs))):
+    ## compute derivative of error w.r.t the output probabilites
+    ## dE/dy[j] = y[j] - t[j]
     dy = np.copy(ps[t])
     dy[targets[t]] -= 1 # backprop into y
+    
+    ## output layer doesnot use activation function, so no need to compute the derivative of error with regard to the net input
+    ## of output layer. 
+    ## then, we could directly compute the derivative of error with regard to the weight between hidden layer and output layer.
     dWhy += np.dot(dy, hs[t].T)
     dby += dy
     dh = np.dot(Why.T, dy) + dhnext # backprop into h
