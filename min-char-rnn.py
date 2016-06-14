@@ -126,14 +126,23 @@ while True:
 
   # forward seq_length characters through the net and fetch gradient
   loss, dWxh, dWhh, dWhy, dbh, dby, hprev = lossFun(inputs, targets, hprev)
+  ## author using Adagrad(a kind of gradient descent)
   smooth_loss = smooth_loss * 0.999 + loss * 0.001
-  if n % 100 == 0: print 'iter %d, loss: %f' % (n, smooth_loss) # print progress
+  if n % 100 == 0:
+    print 'iter %d, loss: %f' % (n, smooth_loss) # print progress
   
   # perform parameter update with Adagrad
-  for param, dparam, mem in zip([Wxh, Whh, Why, bh, by], 
-                                [dWxh, dWhh, dWhy, dbh, dby], 
+  ## parameter update for Adagrad is different from gradient descent parameter update
+  ## need to learn what is Adagrad exactly is.
+  ## seems using weight matrix, derivative of weight matrix and a memory matrix, update memory matrix each iteration
+  ## memory is the accumulation of each squared derivatives in each iteration.
+  ## mem += dparam * dparam
+  for param, dparam, mem in zip([Wxh, Whh, Why, bh, by],
+                                [dWxh, dWhh, dWhy, dbh, dby],
                                 [mWxh, mWhh, mWhy, mbh, mby]):
     mem += dparam * dparam
+    ## learning_rate is adjusted by mem, if mem is getting bigger, then learning_rate will be small
+    ## gradient descent of Adagrad
     param += -learning_rate * dparam / np.sqrt(mem + 1e-8) # adagrad update
 
   p += seq_length # move data pointer
