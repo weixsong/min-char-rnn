@@ -4,6 +4,7 @@ BSD License
 """
 
 ## add comments by weixsong
+## reference page [The Unreasonable Effectiveness of Recurrent Neural Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/)
 
 ## this is a 3 layers neuron network.
 ## input layer: one hot vector, dim: vocab * 1
