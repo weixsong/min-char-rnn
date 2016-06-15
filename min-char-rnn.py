@@ -46,6 +46,10 @@ by = np.zeros((vocab_size, 1)) # output bias
 
 ## compute loss, derivative
 ## cross-entropy loss is used
+## actually, here the author use cross-entropy as error,
+## but in the backpropagation the author use sum of squared error (Quadratic cost) to do back propagation.
+## be careful about this trick. 
+## this is because the output layer is a linear layer.
 def lossFun(inputs, targets, hprev):
   """
   inputs,targets are both list of integers.
