@@ -50,6 +50,7 @@ by = np.zeros((vocab_size, 1)) # output bias
 ## but in the backpropagation the author use sum of squared error (Quadratic cost) to do back propagation.
 ## be careful about this trick. 
 ## this is because the output layer is a linear layer.
+## TRICK: Using the quadratic cost when we have linear neurons in the output layer, z[i] = a[i]
 def lossFun(inputs, targets, hprev):
   """
   inputs,targets are both list of integers.
