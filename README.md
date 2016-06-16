@@ -21,7 +21,7 @@ In the output layer, softmax is used to compute the character probability distri
 $$h^{t} = tanh(Whh * h^{t-1} + Wxh*X)$$
 
 ** compute output vector **
-$$ y = Why * h $$
+$$y = Why * h$$
 
 ## Training data
 This model use the characters in input.txt file, use current character and next character as a training data pair. Each character is represented by one hot vector, target value means which character we expected given current character.
@@ -41,10 +41,10 @@ Output layer size is V, we get a character probability distribution in output la
 
 ## Cost Function
 This RNN model use cross entropy as cost function (error), cross entropy for one training data:
-$$ H(t, y) = -\sum_{i=1}^{V}t_{i}logy_{i} $$
+$$H(t, y) = -\sum_{i=1}^{V}t_{i}logy_{i}$$
 
-Because in $$t$$, most of the value is 0, so, we could rewrite the above equation as:
-$$ H(t, y) = -t_{i}logy_{i} $$
+Because in $t$, most of the value is 0, so, we could rewrite the above equation as:
+$$H(t, y) = -t_{i}logy_{i}$$
 
-Here $$i$$ is the indice of 1 in vector t.
+Here $i$ is the indice of 1 in vector t.
 
