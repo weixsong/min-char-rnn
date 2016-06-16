@@ -61,7 +61,7 @@ pip install numpy
 python min-char-rnn.py
 ```
 
-## output of this model
+## Output of this model
 The output of this model is sampled characters given current input characters.
 Examples out output:
 ```
