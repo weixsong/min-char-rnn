@@ -45,8 +45,33 @@ Output layer size is V, we get a character probability distribution in output la
 This RNN model use cross entropy as cost function (error), cross entropy for one training data:
 $$H(t, y) = -\sum_{i=1}^{V}t_{i}logy_{i}$$
 
-Because in $t$, most of the value is 0, so, we could rewrite the above equation as:
+Because in t, most of the value is 0, so, we could rewrite the above equation as:
 $$H(t, y) = -t_{i}logy_{i}$$
 
-Here $i$ is the indice of 1 in vector t.
+Here i is the indice of 1 in vector t.
 
+# Train RNN Model
+
+1. Install numpy
+```
+pip install numpy
+```
+2. Run this code
+```
+python min-char-rnn.py
+```
+
+## output of this model
+The output of this model is sampled characters given current input characters.
+Examples out output:
+```
+iter 92400, loss: 48.542305
+---- sample -----
+----
+ cet for dons of he wast oune tofus shee loolf the was hering thity,
+Youpres
+To make his it you gain fell must out you yie t.
+Wert; your geang'p his you cageiingeal my madm; -hat fould the conquall to  
+----
+
+```
