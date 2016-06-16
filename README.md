@@ -52,11 +52,11 @@ Here i is the indice of 1 in vector t.
 
 # Train RNN Model
 
-1. Install numpy
+* Install numpy
 ```
 pip install numpy
 ```
-2. Run this code
+* Run this code
 ```
 python min-char-rnn.py
 ```
