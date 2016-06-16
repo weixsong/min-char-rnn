@@ -16,6 +16,13 @@ This simple RNN model contain 3 matrices:
 
 In the output layer, softmax is used to compute the character probability distribution, then we could sample the next character according previous input.
 
+## RNN Equation
+** update hidden state **
+$$h^{t} = tanh(Whh * h^{t-1} + Wxh*X)$$
+
+** compute output vector **
+$$ y = Why * h $$
+
 ## Training data
 This model use the characters in input.txt file, use current character and next character as a training data pair. Each character is represented by one hot vector, target value means which character we expected given current character.
 
@@ -32,5 +39,12 @@ Hidden layer size is H, we also need to record the hidden state(value of hidden 
 ## Output Layer
 Output layer size is V, we get a character probability distribution in output layer, then we could sample a character in this probability distribution given a sequence of input.
 
+## Cost Function
+This RNN model use cross entropy as cost function (error), cross entropy for one training data:
+$$ H(t, y) = -\sum_{i=1}^{V}t_{i}logy_{i} $$
 
+Because in $$t$$, most of the value is 0, so, we could rewrite the above equation as:
+$$ H(t, y) = -t_{i}logy_{i} $$
+
+Here $$i$$ is the indice of 1 in vector t.
 
