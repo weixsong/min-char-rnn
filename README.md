@@ -18,12 +18,12 @@ In the output layer, softmax is used to compute the character probability distri
 
 ## RNN Equation
 ** update hidden state **
-![equation](https://latex.codecogs.com/gif.download?h%5E%7Bt%7D%20%3D%20tanh%28Whh%20*%20h%5E%7Bt-1%7D%20+%20Wxh*X%29)
-$$h^{t} = tanh(Whh * h^{t-1} + Wxh*X)$$
 
+h<sup>t</sup> = tanh(Whh * h<sup>t-1</sup> + Wxh*X)
 
 ** compute output vector **
-$$y = Why * h$$
+
+y = Why * h
 
 ## Training data
 This model use the characters in input.txt file, use current character and next character as a training data pair. Each character is represented by one hot vector, target value means which character we expected given current character.
