@@ -17,11 +17,11 @@ This simple RNN model contain 3 matrices:
 In the output layer, softmax is used to compute the character probability distribution, then we could sample the next character according previous input.
 
 ## RNN Equation
-** update hidden state **
+**update hidden state**
 
 h<sup>t</sup> = tanh(Whh * h<sup>t-1</sup> + Wxh*X)
 
-** compute output vector **
+**compute output vector**
 
 y = Why * h
 
