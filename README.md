@@ -18,7 +18,9 @@ In the output layer, softmax is used to compute the character probability distri
 
 ## RNN Equation
 ** update hidden state **
+![equation](https://latex.codecogs.com/gif.download?h%5E%7Bt%7D%20%3D%20tanh%28Whh%20*%20h%5E%7Bt-1%7D%20+%20Wxh*X%29)
 $$h^{t} = tanh(Whh * h^{t-1} + Wxh*X)$$
+
 
 ** compute output vector **
 $$y = Why * h$$
