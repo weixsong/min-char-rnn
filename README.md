@@ -25,3 +25,11 @@ Let's assume that we only have 4 characters in our vocab, ('h','e','l','o'), the
 Input layer size is V, then input value is a V * 1 one hot vector.
 
 ## 
+
+
+```seq
+Andrew->China: Says Hello
+Note right of China: China thinks\nabout it
+China-->Andrew: How are you?
+Andrew->>China: I am good thanks!
+```
